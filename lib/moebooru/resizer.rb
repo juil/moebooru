@@ -2,6 +2,11 @@ module Moebooru
   module Resizer
     class ResizeError < Exception; end
 
+    # Meaning of sRGB and RGB flipped at 6.7.5.
+    # Reference: http://www.imagemagick.org/discourse-server/viewtopic.php?f=2&t=20501
+    TARGET_COLORSPACE = MiniMagick::image_magick_version >= Gem::Version.create('6.7.5') ?
+                        'sRGB' : 'RGB'
+
     def resize(file_ext, read_path, write_path, output_size, output_quality)
       image = MiniMagick::Image.open(read_path)
       output_size[:width] ||= image[:width]
@@ -12,27 +17,39 @@ module Moebooru
       output_size[:crop_right] ||= image[:width]
       output_size[:crop_width] ||= output_size[:crop_right] - output_size[:crop_left]
       output_size[:crop_height] ||= output_size[:crop_bottom] - output_size[:crop_top]
-      write_size = "#{output_size[:width]}x#{output_size[:height]}"
+      # The '!' is required to force the size, otherwise ImageMagick will try
+      # to outsmart the previously calculated size which isn't exactly smart.
+      # Example: 1253x1770 -> 212x300. In ImageMagick it becomes 212x299.
+      write_size = "#{output_size[:width]}x#{output_size[:height]}!"
       write_crop = "#{output_size[:crop_width]}x#{output_size[:crop_height]}+#{output_size[:crop_left]}+#{output_size[:crop_top]}"
       write_format = write_path.split('.')[-1]
       if write_format =~ /\A(jpe?g|gif|png)\z/i
         write_format = write_format.downcase
       else
-        format = file_ext
+        write_format = file_ext
       end
       image.format write_format do |f|
+        f.background CONFIG['bgcolor']
+        f.flatten
         f.crop write_crop
         f.resize write_size
+        f.repage.+
         if write_format =~ /\Ajpe?g\z/
           f.sampling_factor '2x2,1x1,1x1'
         end
+        # Any other colorspaces suck for storing images.
+        # Since we're just resizing stuff here, actual colorspace shouldn't
+        # matter much.
+        f.colorspace TARGET_COLORSPACE
         f.quality output_quality.to_s
       end
       image.write write_path
-      rescue IOError
-        raise
-      rescue Exception => e
-        raise ResizeError, e.to_s
+    rescue IOError
+      raise
+    rescue Exception => e
+      raise ResizeError, e.to_s
+    ensure
+      image.destroy! if image
     end
 
     # If allow_enlarge is true, always scale to fit, even if the source area is

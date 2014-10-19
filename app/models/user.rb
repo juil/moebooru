@@ -6,13 +6,21 @@ class User < ActiveRecord::Base
   attr_accessor :current_email
   class AlreadyFavoritedError < Exception; end
 
+  def set_api_key
+    self.api_key = SecureRandom.urlsafe_base64
+  end
+
+  def self.authenticate_with_api_key(username, api_key)
+    where(name: username, api_key: api_key).first
+  end
+
   def log(ip)
     Rails.cache.fetch({ :type => :user_logs, :id => self.id, :ip => ip }, :expires_in => 10.minutes) do
-      Rails.cache.fetch({ :type => :user_logs, :id => :all }, :expires_id => 1.day) do
+      Rails.cache.fetch({ :type => :user_logs, :id => :all }, :expires_in => 1.day) do
         UserLog.where('created_at < ?', 3.days.ago).delete_all
       end
       begin
-        log_entry = self.user_logs.find_or_initialize_by_ip_addr(:ip_addr => ip)
+        log_entry = self.user_logs.find_or_initialize_by(:ip_addr => ip)
         log_entry.created_at = Time.now
         log_entry.save
       # Once in a blue moon there will be race condition on find_or_initialize
@@ -31,7 +39,7 @@ class User < ActiveRecord::Base
     def self.included(m)
       m.after_save :commit_blacklists
       m.after_create :set_default_blacklisted_tags
-      m.has_many :user_blacklisted_tags, :dependent => :delete_all, :order => :id
+      m.has_many :user_blacklisted_tags, lambda { order "id" }, :dependent => :delete_all
     end
 
     def blacklisted_tags=(blacklists)
@@ -70,7 +78,7 @@ class User < ActiveRecord::Base
       end
 
       def authenticate_hash(name, pass)
-        find(:first, :conditions => ["lower(name) = lower(?) AND password_hash = ?", name, pass])
+        where("LOWER(users.name) = LOWER(?)", name).where(:password_hash => pass).first
       end
 
       def sha1(pass)
@@ -151,28 +159,18 @@ class User < ActiveRecord::Base
 
   module UserNameMethods
     module ClassMethods
-      def find_name_helper(user_id)
-        if user_id.nil?
-          return CONFIG["default_guest_name"]
-        end
-
-        user = where(:id => user_id).select(:name).first
-
-        if user
-          return user.name
-        else
-          return CONFIG["default_guest_name"]
-        end
-      end
-
       def find_name(user_id)
-        return Rails.cache.fetch("user_name:#{user_id}") do
-          find_name_helper(user_id)
+        Rails.cache.fetch("user_name:#{user_id}") do
+          begin
+            find(user_id).name
+          rescue ActiveRecord::RecordNotFound
+            CONFIG['default_guest_name']
+          end
         end
       end
 
       def find_by_name(name)
-        find(:first, :conditions => ["lower(name) = lower(?)", name])
+        where('lower(name) = lower(?)', name).first
       end
     end
 
@@ -185,8 +183,9 @@ class User < ActiveRecord::Base
       m.after_save :update_cached_name
     end
 
+    # FIXME: nuke this
     def pretty_name
-      name.tr("_", " ")
+      name
     end
 
     def update_cached_name
@@ -214,10 +213,6 @@ class User < ActiveRecord::Base
     def user_info_cookie
       [id, level, use_browser ? "1":"0"].join(";");
     end
-  end
-
-  def self.find_by_name_nocase(name)
-    return User.find(:first, :conditions => ["lower(name) = lower(?)", name])
   end
 
   module UserTagMethods
@@ -337,9 +332,9 @@ class User < ActiveRecord::Base
       version = Rails.cache.read("$cache_version").to_i
       key = "held-post-count/v=#{version}/u=#{self.id}"
 
-      return Rails.cache.fetch(key) {
-        Post.count(:conditions => ["user_id = ? AND is_held AND status <> 'deleted'", self.id])
-      }.to_i
+      Rails.cache.fetch key do
+        Post.where(:user_id => self.id, :is_held => true).where("status <> ?", "deleted").count
+      end
     end
   end
 
@@ -580,7 +575,7 @@ class User < ActiveRecord::Base
 
   module UserTagSubscriptionMethods
     def self.included(m)
-      m.has_many :tag_subscriptions, :dependent => :delete_all, :order => "name"
+      m.has_many :tag_subscriptions, lambda { order "name" }, :dependent => :delete_all
     end
 
     def tag_subscriptions_text=(text)
@@ -604,8 +599,8 @@ class User < ActiveRecord::Base
 
   module UserLanguageMethods
     def self.included(m)
-      m.validates_format_of :language, :with => /^([a-z\-]+)|$/
-      m.validates_format_of :secondary_languages, :with => /^([a-z\-]+(,[a-z\0]+)*)?$/
+      m.validates_format_of :language, :with => /\A([a-z\-]+)|\z/
+      m.validates_format_of :secondary_languages, :with => /\A([a-z\-]+(,[a-z\0]+)*)?\z/
       m.before_validation :commit_secondary_languages
     end
 

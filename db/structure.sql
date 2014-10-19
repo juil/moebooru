@@ -3,6 +3,7 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -587,39 +588,6 @@ ALTER SEQUENCE dmails_id_seq OWNED BY dmails.id;
 
 
 --
--- Name: tag_subscriptions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE tag_subscriptions (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    tag_query text NOT NULL,
-    cached_post_ids text DEFAULT ''::text NOT NULL,
-    name character varying(255) DEFAULT 'General'::character varying NOT NULL,
-    is_visible_on_profile boolean DEFAULT true NOT NULL
-);
-
-
---
--- Name: favorite_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE favorite_tags_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: favorite_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE favorite_tags_id_seq OWNED BY tag_subscriptions.id;
-
-
---
 -- Name: favorites_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -674,39 +642,6 @@ CREATE SEQUENCE flagged_post_details_id_seq
 --
 
 ALTER SEQUENCE flagged_post_details_id_seq OWNED BY flagged_post_details.id;
-
-
---
--- Name: flagged_posts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE flagged_posts (
-    id integer NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    post_id integer NOT NULL,
-    reason text NOT NULL,
-    user_id integer,
-    is_resolved boolean DEFAULT false NOT NULL
-);
-
-
---
--- Name: flagged_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE flagged_posts_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: flagged_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE flagged_posts_id_seq OWNED BY flagged_posts.id;
 
 
 --
@@ -1124,20 +1059,6 @@ ALTER SEQUENCE pools_posts_id_seq OWNED BY pools_posts.id;
 
 
 --
--- Name: pools_posts_temp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pools_posts_temp (
-    id integer NOT NULL,
-    sequence integer DEFAULT 0 NOT NULL,
-    pool_id integer NOT NULL,
-    post_id integer NOT NULL,
-    next_post_id integer,
-    prev_post_id integer
-);
-
-
---
 -- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1254,19 +1175,6 @@ CREATE SEQUENCE post_frames_id_seq
 --
 
 ALTER SEQUENCE post_frames_id_seq OWNED BY post_frames.id;
-
-
---
--- Name: post_relations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE post_relations (
-    id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    post1 integer NOT NULL,
-    post2 integer NOT NULL,
-    total_shared integer NOT NULL
-);
 
 
 --
@@ -1430,6 +1338,39 @@ CREATE TABLE tag_implications (
     reason text DEFAULT ''::text NOT NULL,
     creator_id integer
 );
+
+
+--
+-- Name: tag_subscriptions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE tag_subscriptions (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    tag_query text NOT NULL,
+    cached_post_ids text DEFAULT ''::text NOT NULL,
+    name character varying(255) DEFAULT 'General'::character varying NOT NULL,
+    is_visible_on_profile boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: tag_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE tag_subscriptions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tag_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE tag_subscriptions_id_seq OWNED BY tag_subscriptions.id;
 
 
 --
@@ -1600,7 +1541,8 @@ CREATE TABLE users (
     language text DEFAULT ''::text NOT NULL,
     secondary_languages text DEFAULT ''::text NOT NULL,
     pool_browse_mode integer DEFAULT 1 NOT NULL,
-    use_browser boolean DEFAULT false NOT NULL
+    use_browser boolean DEFAULT false NOT NULL,
+    api_key character varying(255)
 );
 
 
@@ -1718,13 +1660,6 @@ ALTER TABLE ONLY flagged_post_details ALTER COLUMN id SET DEFAULT nextval('flagg
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY flagged_posts ALTER COLUMN id SET DEFAULT nextval('flagged_posts_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY histories ALTER COLUMN id SET DEFAULT nextval('histories_id_seq'::regclass);
 
 
@@ -1802,7 +1737,7 @@ ALTER TABLE ONLY posts ALTER COLUMN change_seq SET DEFAULT nextval('post_change_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY tag_subscriptions ALTER COLUMN id SET DEFAULT nextval('favorite_tags_id_seq'::regclass);
+ALTER TABLE ONLY tag_subscriptions ALTER COLUMN id SET DEFAULT nextval('tag_subscriptions_id_seq'::regclass);
 
 
 --
@@ -1936,14 +1871,6 @@ ALTER TABLE ONLY favorites
 
 ALTER TABLE ONLY flagged_post_details
     ADD CONSTRAINT flagged_post_details_pkey PRIMARY KEY (id);
-
-
---
--- Name: flagged_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY flagged_posts
-    ADD CONSTRAINT flagged_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -2662,6 +2589,13 @@ CREATE INDEX index_user_logs_on_user_id ON user_logs USING btree (user_id);
 
 
 --
+-- Name: index_users_on_api_key; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_users_on_api_key ON users USING btree (api_key);
+
+
+--
 -- Name: index_users_on_avatar_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2756,28 +2690,48 @@ CREATE INDEX wiki_pages_search_idx ON wiki_pages USING gin (text_search_index);
 -- Name: delete_histories; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE RULE delete_histories AS ON DELETE TO pools DO (DELETE FROM history_changes WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'pools'::text)); DELETE FROM histories WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'pools'::text)); );
+CREATE RULE delete_histories AS
+    ON DELETE TO pools DO ( DELETE FROM history_changes
+  WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'pools'::text));
+ DELETE FROM histories
+  WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'pools'::text));
+);
 
 
 --
 -- Name: delete_histories; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE RULE delete_histories AS ON DELETE TO pools_posts DO (DELETE FROM history_changes WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'pools_posts'::text)); DELETE FROM histories WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'pools_posts'::text)); );
+CREATE RULE delete_histories AS
+    ON DELETE TO pools_posts DO ( DELETE FROM history_changes
+  WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'pools_posts'::text));
+ DELETE FROM histories
+  WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'pools_posts'::text));
+);
 
 
 --
 -- Name: delete_histories; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE RULE delete_histories AS ON DELETE TO posts DO (DELETE FROM history_changes WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'posts'::text)); DELETE FROM histories WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'posts'::text)); );
+CREATE RULE delete_histories AS
+    ON DELETE TO posts DO ( DELETE FROM history_changes
+  WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'posts'::text));
+ DELETE FROM histories
+  WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'posts'::text));
+);
 
 
 --
 -- Name: delete_histories; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE RULE delete_histories AS ON DELETE TO tags DO (DELETE FROM history_changes WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'tags'::text)); DELETE FROM histories WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'tags'::text)); );
+CREATE RULE delete_histories AS
+    ON DELETE TO tags DO ( DELETE FROM history_changes
+  WHERE ((history_changes.remote_id = old.id) AND (history_changes.table_name = 'tags'::text));
+ DELETE FROM histories
+  WHERE ((histories.group_by_id = old.id) AND (histories.group_by_table = 'tags'::text));
+);
 
 
 --
@@ -3032,22 +2986,6 @@ ALTER TABLE ONLY notes
 
 
 --
--- Name: fk_post_relations__post1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY post_relations
-    ADD CONSTRAINT fk_post_relations__post1 FOREIGN KEY (post1) REFERENCES posts(id) ON DELETE CASCADE;
-
-
---
--- Name: fk_post_relations__post2; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY post_relations
-    ADD CONSTRAINT fk_post_relations__post2 FOREIGN KEY (post2) REFERENCES posts(id) ON DELETE CASCADE;
-
-
---
 -- Name: fk_post_tag_histories__post; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3133,14 +3071,6 @@ ALTER TABLE ONLY flagged_post_details
 
 ALTER TABLE ONLY flagged_post_details
     ADD CONSTRAINT flagged_post_details_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-
---
--- Name: flagged_posts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY flagged_posts
-    ADD CONSTRAINT flagged_posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 
 --
@@ -3355,6 +3285,8 @@ ALTER TABLE ONLY users
 -- PostgreSQL database dump complete
 --
 
+SET search_path TO "$user",public;
+
 INSERT INTO schema_migrations (version) VALUES ('1');
 
 INSERT INTO schema_migrations (version) VALUES ('10');
@@ -3506,6 +3438,12 @@ INSERT INTO schema_migrations (version) VALUES ('20120920173803');
 INSERT INTO schema_migrations (version) VALUES ('20120920174218');
 
 INSERT INTO schema_migrations (version) VALUES ('20120921040720');
+
+INSERT INTO schema_migrations (version) VALUES ('20130326154700');
+
+INSERT INTO schema_migrations (version) VALUES ('20130326161630');
+
+INSERT INTO schema_migrations (version) VALUES ('20140309152432');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 

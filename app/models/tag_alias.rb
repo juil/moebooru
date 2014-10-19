@@ -1,5 +1,5 @@
 class TagAlias < ActiveRecord::Base
-  belongs_to :tags, :foreign_key => 'alias_id'
+  belongs_to :tag, :foreign_key => "alias_id"
   before_create :normalize
   before_create :validate_uniqueness
   after_destroy :expire_tag_cache_after_deletion
@@ -16,7 +16,7 @@ class TagAlias < ActiveRecord::Base
 
   def self.to_aliased_helper(tag_name)
     # TODO: add memcached support
-    tag = find(:first, :select => "tags.name AS name", :joins => "JOIN tags ON tags.id = tag_aliases.alias_id", :conditions => ["tag_aliases.name = ? AND tag_aliases.is_pending = FALSE", tag_name])
+    tag = joins(:tag).select("tags.name").where(:name => tag_name, :is_pending => false).first
     tag ? tag.name : tag_name
   end
 

@@ -22,23 +22,33 @@ module TagHelper
 
     html = ""
 
+
     case tags[0]
     when String
-      tags = Tag.where(:name => tags).select([:name, :post_count, :id]).map { |t| [t.name, t.post_count, t.id] }.sort
+      tags = Tag.where(:name => tags).select([:name, :post_count, :id, :tag_type]).map { |t| [Tag.type_name_from_value(t.tag_type), t.name, t.post_count, t.id] }
 
-    when Hash
-      tags = tags.map {|x| [x["name"], x["post_count"], nil]}
-
-    when Tag
-      tags = tags.map {|x| [x.name, x.post_count, x.id]}
+    when Hash, Tag, Array
+      case tags[0]
+      when Hash
+        tags = tags.map {|x| [x["name"], x["post_count"], nil]}
+      when Tag
+        tags = tags.map {|x| [x.name, x.post_count, x.id]}
+      end
+      tags_type = Tag.batch_get_tag_types(tags.map { |data| data[0] })
+      tags = tags.map { |arr| arr.insert 0, tags_type[arr[0]] }
     end
 
-    tags.each do |name, count, id|
+    case controller.action_name
+    when 'show'
+      tags.sort_by! { |a| [Tag::TYPE_ORDER[a[0]], a[1]] }
+    when 'index'
+      tags.sort_by! { |a| [Tag::TYPE_ORDER[a[0]], -a[2].to_i, a[1]] }
+    end
+
+    tags.each do |tag_type, name, count, id|
       name ||= "UNKNOWN"
 
-      tag_type = Tag.type_name(name)
-
-      html << %{<li class="tag-type-#{tag_type}">}
+      html << %{<li class="tag-link tag-type-#{tag_type}" data-name="#{name}" data-type="#{tag_type}">}
 
       if CONFIG["enable_artists"] && tag_type == "artist"
         html << %{<a href="/artist/show?name=#{u(name)}">?</a> }
@@ -64,7 +74,7 @@ module TagHelper
     if options[:with_aliases] then
       # Map tags to aliases to the tag, and include the original tag so search engines can
       # find it.
-      id_list = tags.map { |t| t[2] }
+      id_list = tags.map { |t| t[3] }
       alternate_tags = TagAlias.where(:alias_id => id_list).pluck(:name)
       if not alternate_tags.empty?
         html << %{<span style="display: none;">#{alternate_tags.map { |t| t.tr("_", " ") }.join(" ")}</span>}

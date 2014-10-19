@@ -15,8 +15,8 @@ class Pool < ActiveRecord::Base
   module PostMethods
     def self.included(m)
       m.extend(ClassMethods)
-      m.has_many :pool_posts, :class_name => "PoolPost", :order => "nat_sort(sequence), post_id", :conditions => "pools_posts.active"
-      m.has_many :all_pool_posts, :class_name => "PoolPost", :order => "nat_sort(sequence), post_id"
+      m.has_many :pool_posts, lambda { where("pools_posts.active").order("nat_sort(sequence), post_id") }, :class_name => "PoolPost"
+      m.has_many :all_pool_posts, lambda { order "nat_sort(sequence), post_id" }, :class_name => "PoolPost"
       m.versioned :name
       m.versioned :description, :default => ""
       m.versioned :is_public, :default => true
@@ -301,7 +301,7 @@ class Pool < ActiveRecord::Base
           file_size = post.file_size
           crc32 = post.crc32
         end
-        crc32 = crc32 ? "%x" % crc32.to_i : '-'
+        crc32 = crc32 ? '%08x' % crc32.to_i : '-'
         buf += [{ :filename => filename, :path => path, :file_size => file_size, :crc32 => crc32 }]
       end
 

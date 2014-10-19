@@ -1,9 +1,5 @@
 require File.expand_path('../boot', __FILE__)
 
-require File.expand_path('../init_config', __FILE__)
-require File.expand_path('../local_config', __FILE__)
-require File.expand_path('../default_config', __FILE__)
-
 # Pick the frameworks you want:
 require "active_record/railtie"
 require "action_controller/railtie"
@@ -12,12 +8,11 @@ require "action_mailer/railtie"
 require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
-if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(:assets => %w(development test)))
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
-end
+require File.expand_path('../init_config', __FILE__)
+require File.expand_path('../local_config', __FILE__)
+require File.expand_path('../default_config', __FILE__)
+
+Bundler.require(*CONFIG['bundler_groups'])
 
 module Moebooru
   class Application < Rails::Application
@@ -43,6 +38,7 @@ module Moebooru
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     # config.time_zone = 'Central Time (US & Canada)'
 
+    config.i18n.enforce_available_locales = true
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     config.i18n.default_locale = CONFIG['default_locale']
@@ -83,9 +79,11 @@ module Moebooru
       config.cache_store = :null_store
     end
 
-    config.action_mailer.smtp_settings = { :openssl_verify_mode => 'none', :domain => CONFIG['server_host'] }
-
     # This one is never reliable because there's no standard controlling this.
     config.action_dispatch.ip_spoofing_check = false
+
+    # Save cache in different location to avoid collision.
+    config.action_controller.page_cache_directory = config.root.join('public', 'cache')
+
   end
 end

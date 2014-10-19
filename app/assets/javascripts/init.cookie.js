@@ -6,17 +6,13 @@ jQuery(document).ready(function($) {
 
   // Check if there's new comment.
   if ($.cookie('comments_updated') == '1') {
-    $('#comments-link').addClass('comments-update');
-  };
-
-  // Check if there's new forum post.
-  if ($.cookie('forum_updated') == '1') {
-    $('#forum-link').addClass('forum-update');
+    $('#comments-link').addClass('comments-update')
+    $('#comments-link').addClass('bolded');
   };
 
   // Show block/ban reason if the user is blocked/banned.
   if ($.cookie('block_reason') && $.cookie('block_reason') != '') {
-    $('#block-reason').html($.cookie('block_reason')).show();
+    $('#block-reason').text($.cookie('block_reason')).show();
   };
 
   // Check if there's any pending post moderation queue.

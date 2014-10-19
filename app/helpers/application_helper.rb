@@ -33,7 +33,8 @@ module ApplicationHelper
 
   def format_text(text, options = {})
     # The parses is more or less html safe
-    DText.parse(text).html_safe
+    # FIXME: for some reason rbx requires force encoding here.
+    DText.parse(text).force_encoding('utf-8').html_safe
   end
 
   def format_inline(inline, num, id, preview_html=nil)
@@ -206,4 +207,23 @@ module ApplicationHelper
     return starting_level >= needed_level
   end
 
+  # Submit tag with a twist: removes name from tag form data so it doesn't add
+  # unnecessary query string on forms with GET method.
+  def get_submit_tag(value = "Save changes", options = {})
+    submit_tag value, options.merge(:name => nil)
+  end
+
+  # Text field tag without id.
+  def generic_text_field_tag(name, value = nil, options = {})
+    text_field_tag name, value, options.merge(:id => nil)
+  end
+
+  # Cache with locale. Only works when the name is an array or string.
+  def local_cache(name = {}, options = nil, &block)
+    if (name.is_a? String) || (name.is_a? Array)
+      name = Array(name)
+      name << I18n.locale
+    end
+    cache name, options, &block
+  end
 end

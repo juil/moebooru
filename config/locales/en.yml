@@ -95,7 +95,7 @@ en:
       clear: Clear finished uploads
       completed_html: Post %{id} complete
       exists_html: Post %{id} already exists
-      pause: Puase
+      pause: Pause
       paused: Paused
       pending: Pending
       queue_uploads: Queue Uploads
@@ -111,11 +111,17 @@ en:
     _no: 'No'
     _yes: 'Yes'
     add: Add
+    approve: Approve
     back: Back
     cancel: Cancel
     delete: Delete
     edit: Edit
     save: Save
+    search: Search
+    select:
+      all: Select All
+      invert: Invert Selection
+    update: Update
   c:
     pool:
       not_found: "Can't find pool with id %{id}"
@@ -202,6 +208,7 @@ en:
     edit:
       post: Post
       post_title: Title
+      preview: Preview
     index:
       created_by: Created by
       help: Help
@@ -455,12 +462,21 @@ en:
         view: View Comments
       forum:
         _: Forum
+        mark_all_read: Mark All Read
         new: New Topic
         search: Search Forums
         view: View Topics
       help:
         _: Help
+        artists: Artist Help
+        comments: Comment Help
+        forum: Forum Help
+        notes: Note Help
+        pools: Pool Help
+        posts: Post Help
         site: Site Help
+        tags: Tag Help
+        wiki: Wiki Help
       more: More »
       new_mail: New Mail
       notes:
@@ -498,8 +514,11 @@ en:
         create: Create New Page
         index: View Wiki Index
         search: Search Wiki
-  news_ticker: "Tags should be in English/Romaji kthx"
-  news_ticker_close: "Close"
+    news:
+      close: Close
+    settings:
+      menu:
+        title: Settings
   note:
     footer:
       help: Help
@@ -525,154 +544,260 @@ en:
     search:
       search: Search
       title: Search Notes
-  # view/note/footer
-  note_body: "Body"
-  note_click: "Click to edit"
-  note_date: "Date"
-  note_edited: "Edited By"
-  note_help: "Help"
-  # view/note/history
-  note_history: "History"
-  note_list: "List"
-  note_note: "Note"
-  note_options: "Options"
-  # view/note/_note
-  note_post: "Post"
-  note_requests: "Requests"
-  note_revert: "Revert"
-  note_revert_confirm: "Do you really wish to revert to this note?"
-  note_search: "Search"
-  note_search: "Search"
-  notice: "This post was flagged for deletion by "
-  notice10: "Reason: "
-  notice11: "This post has been temporarily held from the index by the poster."
-  notice12: "activate this post"
-  notice13: "This image has been resized. Click on the "
-  notice14: "View larger version"
-  notice15: " link in the sidebar for a high-quality version."
-  notice16: "Always view original"
-  notice17: "Hide this message"
-  notice18: "Image samples have been disabled. If you find this to be too slow, you can turn samples back on in your profile settings."
-  notice19: "This post belongs to a "
-  notice2: "unflag this post"
-  notice20: "parent post"
-  notice21: "make this post the parent"
-  notice22: "This post has "
-  notice23: "a child post"
-  notice24: "child posts"
-  # views/report
-  notice3: "delete"
-  notice4: "This post is pending moderator approval."
-  notice5: "Reason: "
-  notice6: "approve"
-  notice7: "delete"
-  notice8: "This post was deleted."
-  notice9: "By: "
-  notice_text: "Do you really want to approve this post?"
-  # static/more
-  old_browser: "Your browser is very old, and this site will not display properly."
-  old_browser2: "Please consider upgrading to a more recent web browser:"
-  old_browser3: "(hide this message)"
   pool:
+    add_post:
+      add: Add
+      cancel: Cancel
+      info: 'Select a pool to add this post to:'
+      order: Order
+      pool: Pool
+      title: Add to Pool
+    copy:
+      copy: Copy Pool
+      name: Name
+      title: Clone Pool
+    create:
+      cancel: Cancel
+      description: Description
+      is_public: Public?
+      name: Name
+      save: Save
+      title: Create Pool
+    destroy:
+      confirm: 'Are you sure you wish to delete pool %{name}?'
+      title: Delete
+    footer:
+      help: Help
+      list: List
+      new: New
+    import:
+      import: Import
+      info: You can perform a tag search and import all the matching posts into this pool.
+      search: Search
+      title: 'Pool Import: %{name}'
     index:
+      search: Search
+      table:
+        created: Created
+        creator: Creator
+        name: Name
+        posts: Posts
+        updated: Updated
       title: '%{q} - Pools'
       title_main: Pools
-  # view/pool/add_post
-  pool_active: "Active"
-  pool_active_text: "Inactive pools will no longer be selectable when adding a post."
-  # view/post/blacklists
-  pool_add: "Add to Pool"
-  pool_add: "Add"
-  pool_add2: "Add"
-  # view/pool/show
-  pool_add_text: "Select a pool to add this post to:"
-  pool_ago: " ago"
-  pool_ago2: ""
-  pool_cancel: "Cancel"
-  # view/pool/copy
-  pool_clone: "Clone Pool"
-  pool_confirm: "Are you sure you wish to delete "
-  pool_copy: "Copy Pool"
-  # view/pool/create
-  pool_create: "Create Pool"
-  pool_created: "Created"
-  pool_creator: "Creator"
-  pool_delete: "Delete Pool"
-  pool_delete: "Delete"
-  pool_delete_mode: "Delete mode"
-  pool_delete_mode_text: "When delete mode is enabled, clicking on a thumbnail will remove the post from this pool."
-  pool_description: "Description"
-  pool_edit: "Edit Pool"
-  pool_edit: "Edit Pool"
-  # view/pool/update
-  pool_edit: "Edit"
-  pool_help: "Help"
-  # view/pool/import
-  pool_import: "Pool Import: "
-  pool_import2: "Import"
-  pool_import_text: "You can perform a tag search and import all the matching posts into this pool."
-  pool_index: "Index View"
-  pool_interval: "Enter an interval"
-  pool_jpeg: "Download JPGs"
-  pool_list: "List"
-  pool_name: "Name"
-  pool_new: "New"
-  pool_no: "No"
-  # view/pool/footer
-  pool_order: "Order"
-  pool_order: "Pool Ordering: "
-  pool_order2: "Order"
-  pool_order_auto: "Auto Order"
-  pool_order_minus_one: "-1"
-  pool_order_plus_one: "+1"
-  pool_order_text: "Lower numbers will appear first."
-  pool_png: "Download"
-  pool_pool: "Pool"
-  pool_pool2: "Pool: "
-  pool_posts: "Posts"
-  pool_public: "Public?"
-  pool_public_text: "Public pools allow anyone to add/remove posts."
-  pool_question_mark: "?"
-  pool_reverse: "Reverse"
-  # view/pool/select_form
-  pool_save: "Save"
-  # view/pool/destory
-  pool_search: "Search"
-  pool_show_copy: "Copy"
-  pool_show_history: "History"
-  # view/pools/transfer_metadata
-  pool_show_import: "Import"
-  pool_show_order: "Order"
-  pool_show_transfer: "Transfer Post Data"
-  pool_toggle: "Toggle View"
-  pool_transfer: "Transfer from pool number:"
-  pool_transfer_button: "Transfer"
-  pool_transfer_from: "From"
-  pool_transfer_from: "from"
-  pool_transfer_tags: "Tags"
-  pool_transfer_text: "Transferring post data from posts in pool "
-  pool_transfer_text2: "  to posts in pool "
-  pool_transfer_text3: "Tags and ratings will be transferred, and the old posts will be parented to the new posts."
-  pool_transfer_text4: "These pools don't have the same number of posts."
-  pool_transfer_text5: "Please check that tags are being transferred to the correct posts."
-  pool_transfer_text6: " the transfer "
-  pool_transfer_to: "To"
-  pool_transfer_to: "to"
-  pool_updated: "Updated"
-  pool_yes: "Yes"
+    order:
+      auto_order: Auto Order
+      info: Lower numbers will appear first.
+      interval: Enter an interval
+      minus_one: '-1'
+      order: Order
+      plus_one: '+1'
+      reverse: Reverse
+      title_html: 'Pool Ordering: %{name}'
+    select_form:
+      add: Add
+    show:
+      delete_mode_info: 'When delete mode is enabled, clicking on a thumbnail will remove the post from this pool.'
+      links:
+        copy: Copy
+        delete: Delete
+        delete_mode: Delete mode
+        edit: Edit
+        history: History
+        import: Import
+        index_view: Index View
+        jpeg: Download JPGs
+        order: Order
+        png: Download
+        toggle_view: Toggle View
+        transfer: Transfer Post Data
+      title: 'Pool: %{name}'
+    transfer_metadata:
+      from:
+        from: From
+        from_number: 'Transfer from pool number:'
+        to: To
+        transfer: Transfer
+      info_truncated: "These pools don't have the same number of posts."
+      info_truncated_warning: 'Please check that tags are being transferred to the correct posts.'
+      info_what: 'Tags and ratings will be transferred, and the old posts will be parented to the new posts.'
+      reverse: Reverse
+      reverse_text_html: '%{reverse} the transfer'
+      table:
+        from: From
+        tags: Tags
+        to: To
+        transfer: Transfer
+      title_html: 'Transferring post data from posts in pool %{from} to posts in pool %{to}'
+    update:
+      form:
+        description: Description
+        is_active:
+          _: Active
+          info: 'Inactive pools will no longer be selectable when adding a post.'
+        is_public:
+          _: 'Public?'
+          info: 'Public pools allow anyone to add/remove posts.'
+        name: Name
+      title: Edit Pool
   post:
+    blacklists:
+      add: Add
+      hidden_posts: Hidden Posts
+      info: Posts containing all tags will be hidden. Seperate tags with spaces.
+    browse:
+      by:
+        # Posted / <x> ago / by <user>
+        all_html: '%{text} %{ago} %{by}'
+        by_html: by %{user}
+        text: Posted
+      child:
+        all_html: This post has %{child}.
+        child: child posts
+      deleted:
+        by: By
+        reason: Reason
+        title: This post was deleted.
+        undelete: undelete
+      download: Download
+      edit: edit
+      flagged_info_html: Flagged by %{user}.
+      frames: Frames
+      held:
+        activate: (activate it)
+        info: This post is held from the index by the poster.
+      hidden: Hidden
+      image_hidden:
+        info: This post is not displayed due to your account settings.
+        show: Double-click here to display the image
+        title: Image Hidden
+      no_result: No search results.
+      parent:
+        all_html: This post has a %{parent}%{make_parent}.
+        make_parent: make this post the parent
+        parent: parent post
+      parent_post: Parent Post
+      pending_info: This post is pending moderator approval.
+      post_num_html: 'Post #%{num}'
+      reason: Reason
+      score: Score
+      shown_in_index: Shown in Index
+      source: Source
+    delete:
+      delete: Delete
+      noaccess_info: (parent post hidden due to access restrictions)
+      noparent_info: This post has no parent. If this post has been replaced, reparent this post before deleting, and votes will be transferred.
+      parent_info: Votes will be transferred to the following parent post. If this is incorrect, reparent this post before deleting it.
+      permanent: Destroy Permanently
+      permanent_info: This post is already deleted. Destroying it will remove it permanently.
+      reason: Reason
+      title: Delete Post
+    deleted_index:
+      by: Deleted by
+      post: Post
+      reason: Reason
+      tags: Tags
+      title: Deleted Posts
+      user: User
+    favorites:
+      title: Favorited by
+    footer:
+      batch: Batch
+      browse: Browse
+      help: Help
+      history: History
+      image_search: Image Search
+      list: List
+      mod: Moderate
+      popular: Popular
+      random: Random
+      subs: Subscriptions
+      upload: Upload
+    hover:
+      child: Child
+      flagged:
+        by_html: '%{text} by %{data}'
+        text: Flagged
+      hidden: Hidden
+      parent: Parent
+      pending: Pending
+      post_number: 'Post #'
+      rating: Rating
+      score: Score
+    index:
+      activate: Activate all held posts
+      ambiguous: The following tags are ambiguous
+      edit_tags: Edit Tags
+      held_html: You have held %{count}
+      held_view: view
+      maybe_you_meant: Maybe you meant
+      mode: Mode
+      mode_form:
+        approve: Approve posts
+        edit: Edit posts
+        flag: Flag post
+        pool_remove: Remove from pool
+        reparent: Reparent posts
+        script: Apply tag script
+        view: View posts
+      pool_view_html: Viewing pool %{pool}.
     moderate:
+      down: down
+      flagged: Flagged
       mod: mod
+      parent: Parent
+      pending: Pending
+      prompt_reason: Enter a reason
+      rating: Rating
+      reason: Reason
+      score: Score
+      size: Size
+      tags: Tags
       title: Moderation Queue
       uploaded_by_when_html: Uploaded by %{u} %{t_ago} (%{mod})
+      vote_down_html: vote %{down}
     popular_by_day:
+      popular:
+        _: Popular
+        month: Popular (by month)
+        week: Popular (by week)
       title: Exploring %{year}/%{month}/%{day}
     popular_by_month:
+      popular:
+        _: Popular
+        month: Popular (by month)
+        week: Popular (by week)
       title: Exploring %{year}/%{month}
     popular_by_week:
+      popular:
+        _: Popular
+        month: Popular (by month)
+        week: Popular (by week)
       title: Exploring %{st_year}/%{st_month}/%{st_day} - %{end_year}/%{end_month}/%{end_day}
     popular_recent:
+      popular:
+        _: Popular
+        month: Popular (by month)
+        week: Popular (by week)
       title: Exploring %{period}
+    post_atom:
+      data: Image data
+      dimension: Dimension
+      source: Source
+    posts:
+      empty: Nobody here but us chickens!
+    search:
+      search: Search
+      title: Search
+    show:
+      empty: Nobody here but us chickens!
+    show_empty:
+      info: This post does not exist.
+      related:
+        _: Related Posts
+        next: Next
+        previous: Previous
+        random: Random
     show_partials:
       edit:
         find_artists: Find artists
@@ -694,281 +819,182 @@ en:
         source: Source
         tags: Edit Tags
         tags_info_html: Separate tags with spaces (%{more})
+      history_panel:
+        notes: Notes
+        tags: Tags
+        title: History
+      image:
+        denied: You need a privileged account to see this image
+        download:
+          _: Download
+          info: You must download this file manually.
+        save_flash: Save this flash (right click and save)
+      image_footer:
+        edit: Edit
+        respond: Respond
+      options_panel:
+        add_notes: Add translation
+        add_to_pool: Add to pool
+        approve:
+          _: Approve
+          confirm: Do you really want to approve this post?
+        delete: Delete
+        download:
+          image: Image
+          larger: Download larger version
+          normal: Download
+        favorites:
+          add: Add to favorites
+          remove: Remove from favorites
+        flag: Flag for deletion
+        history: Post history
+        resize: Resize image
+        set_avatar: Set avatar
+        title: Options
+        undelete: Undelete
+        view_larger: View larger version
+      pool:
+        change: change page
+        info_html: 'This post is %{sequence} in the %{pool} pool.'
+        next: 'Next »'
+        previous: '« Previous'
+        remove:
+          _: remove
+          confirm: Are you sure you want to remove this post from %{current_pool}?
+        transfer:
+          _: transfer to parent
+          confirm: Are you sure you want to remove this post from %{current_pool} and add the parent post instead?
+      related_posts_panel:
+        find:
+          duplicate: Find dupes
+          similar: Find similar
+        next: Next
+        parent: Parent
+        previous: Previous
+        random: Random
+        title: Related Posts
       statistics_panel:
-        uploaded_by_user_html: 'by %{u}'
+        approver: Approver
+        favorited_by: Favorited by
+        id: Id
+        posted: Posted
+        posted_data_html: '%{time} by %{user}'
+        rating: Rating
+        score: Score
+        size: Size
+        source: Source
+        title: Statistics
+      status_notices:
+        by: By
+        deleted_info: This post was deleted.
+        flagged:
+          delete: delete
+          info: 'This post was flagged for deletion by %{user}. Reason: %{reason}.'
+          unflag: unflag this post
+        held:
+          activate: activate this post
+          info: This post has been temporarily held from the index by the poster.
+        parent:
+          child: a child post
+          child_post_html: 'post #%{child}'
+          children: child posts
+          has_child_html: This post has %{child}.
+          has_parent_html: This post belongs to a %{parent}.
+          make_parent: make this post the parent
+          parent: parent post
+        pending:
+          approve:
+            _: approve
+            confirm: Do you really want to approve this post?
+          delete: delete
+          info: This post is pending moderator approval.
+        reason: Reason
+        resized:
+          always_view_original: Always view original
+          hide: Hide this message
+          info_html: This image has been resized. Click on the %{larger} link in the sidebar for a high-quality version.
+          view_larger: View larger version
+        samples_disabled: Image samples have been disabled. If you find this to be too slow, you can turn samples back on in your profile settings.
+    similar:
+      apply_tag_script: Apply Tag Script
+      down: down
+      duplicate:
+        blacklist: Hidden Posts
+        delete: delete your post
+        guide: duplicate post guidelines
+        info_blacklist_html: Your tag blacklist has hidden some potential duplicates. Use %{blacklist} in the sidebar to view hidden posts.
+        info_delete_html: Otherwise, please %{delete}.
+        info_guide_html: Your post may be a duplicate. Please read the %{guide}.
+        info_reparent_html: If your post is a better version of an existing one, but the old post should remain, %{reparent} the old post.
+        info_mark_duplicate_html: If your post is a better version of an existing one, and the old post should be deleted, %{mark_duplicate}.
+        mark_duplicate: mark the old post as a duplicate
+        reparent: reparent
+      edit_posts: Edit Posts
+      edit_tags: Edit Tags
+      file: File
+      flag_duplicate: Flag as duplicate
+      flag_post: Flag Post
+      mode: Mode
+      mode_color: "Don't ignore colors"
+      mode_gray: Ignore colors
+      options: Options
+      reparent: Reparent
+      services: Services
+      show_more: Show More
+      source: Source
+      update: Update
+      upload: Upload this image
+      use_all_services: Use all services
+      view_posts: View Posts
+    tag_script:
+      confirm: 'Apply tag script to all of these posts?'
+      title: Tag Script
+    tags:
+      title: Tags
     upload:
+      already_exists: This post already exists
       anonymous: Anonymous Upload
+      form:
+        file: File
+        find_artist: Find artist
+        find_related:
+          artists: Related artists
+          characters: Related characters
+          circles: Related circles
+          copyrights: Related copyrights
+          none: none
+          tags: Related tags
+        help: help
+        parent: Parent
+        rating:
+          _: Rating
+          info: Explicit tags include sex, pussy, penis, masturbation, blowjob, etc.
+        source:
+          _: Source
+          info: You can enter a URL here to download from a website.
+        tags:
+          _: Tags
+          info: Separate tags with spaces.
+        upload: Upload
+      guidelines:
+        do_not:
+          compression_artifacts: compression artifacts
+          obnoxious_watermarks: obnoxious watermarks
+          tags_html: Do not upload %{tags} art
+          with_html: Do not upload things with %{with}
+        group: Group doujinshi, manga pages, and similar game CGs together
+        info: Please keep the following guidelines in mind when uploading something. Consistently violating these rules will result in a ban.
+        last_word_connector_or: ', or '
+        limit: You can only upload %{n} today.
+        more_html: Read the %{more_link}
+        more_link: tagging guidelines
+        title: Upload Guidelines
+      posts_deleted:
+        hide: dismiss this message
+        notice_plural_html: Some of your posts were %{recently_deleted}.
+        notice_singular_html: One of your posts was %{recently_deleted}.
+        recently: recently deleted
       title: Upload
-  post_404: "This post does not exist."
-  post_activate: "Activate all held posts"
-  post_amb: "The following tags are ambiguous: "
-  post_approve: "Approve post"
-  post_batch: "Batch"
-  post_blacklist_add: "Add"
-  post_blacklist_text: "Posts containing all tags will be hidden. Seperate tags with spaces."
-  # view/post/browse
-  post_browse: "Browse"
-  post_browse_cancel: "Cancel"
-  post_browse_explicit: "Explicit"
-  post_browse_frame: "Add a Frame"
-  post_browse_frames: "Frames"
-  post_browse_no_results: "No search results."
-  post_browse_parent: "Parent Post"
-  post_browse_questionable: "Questionable"
-  post_browse_rating: "Rating"
-  post_browse_safe: "Safe"
-  post_browse_save: "Save"
-  post_browse_show_in_index: "Shown in Index"
-  post_browse_source: "Source"
-  post_browse_text: "Image Hidden"
-  post_browse_text10: "Source: "
-  post_browse_text11: "This post was deleted."
-  post_browse_text12: "By: "
-  post_browse_text13: "Reason: "
-  post_browse_text14: "undelete"
-  post_browse_text15: "Download:"
-  post_browse_text16: "This post has a "
-  post_browse_text17: "parent post"
-  post_browse_text18: " (make this post the parent)"
-  post_browse_text19: "This post has "
-  post_browse_text2: "This post is not displayed due to your account settings."
-  post_browse_text20: "child posts"
-  post_browse_text21: "Flagged by "
-  post_browse_text22: "Reason: "
-  post_browse_text23: "This post is pending moderator approval."
-  post_browse_text24: "This post is held from the index by the poster."
-  post_browse_text25: "(activate it)"
-  post_browse_text26: "edit"
-  post_browse_text3: "Double-click here to display the image"
-  post_browse_text4: "Post #"
-  post_browse_text5: "Hidden"
-  post_browse_text6: "Posted "
-  post_browse_text7: " ago by "
-  post_browse_text8: "Score: "
-  post_browse_text9: "Frames: "
-  post_cancel: "Cancel"
-  post_comment_google: "Comment translation provided by "
-  post_delete: "Delete Post"
-  post_delete_access: "(parent post hidden due to access restrictions)"
-  post_delete_cancel: "Cancel"
-  post_delete_delete: "Delete"
-  post_delete_no_parent_text: "This post has no parent.  If this post has been replaced, reparent this post before deleting, and votes will be transferred."
-  post_delete_parent_text: "Votes will be transferred to the following parent post. If this is incorrect, reparent this post before deleting it."
-  post_delete_perma: "Destroy Permanently"
-  post_delete_perma_text: "This post is already deleted. Destroying it will remove it permanently."
-  post_deleted_by: "Deleted by"
-  post_deleted_post: "Post"
-  post_deleted_posts: "Deleted Posts"
-  post_deleted_reason: "Reason"
-  post_deleted_tags: "Tags"
-  post_deleted_user: "User"
-  post_download: "Download"
-  post_download_text: "You must download this file manually."
-  post_edit: "Edit posts"
-  post_edit_e: "Explicit"
-  post_edit_find_artists: "Find artists"
-  post_edit_help: "help"
-  post_edit_note_locked: "Note locked"
-  post_edit_parent: "Parent Post"
-  post_edit_q: "Questionable"
-  post_edit_rating: "Rating"
-  post_edit_rating_close: ")"
-  post_edit_rating_locked: "Rating locked"
-  post_edit_rating_locked: "This post is rating locked."
-  post_edit_rating_text: "Explicit tags include sex, pussy, penis, masturbation, blowjob, etc. ("
-  post_edit_related_artists: "Related artists"
-  post_edit_related_characters: "Related characters"
-  post_edit_related_copyrights: "Related copyrights"
-  post_edit_related_none: "None"
-  post_edit_related_tags: "Related tags"
-  post_edit_related_tags2: "Related Tags"
-  post_edit_s: "Safe"
-  post_edit_save: "Save changes"
-  post_edit_shown: "Shown in index"
-  post_edit_source: "Source"
-  post_edit_tags: "Edit Tags"
-  post_edit_tags: "Tags"
-  post_edit_tags_close: ")"
-  post_edit_tags_text: "Separate tags with spaces ("
-  post_empty: "Nobody here but us chickens!"
-  post_favorited_by: "Favorited by"
-  post_file: "File"
-  post_flag: "Flag post"
-  post_flash_dl: "Save this flash (right click and save)"
-  post_gar: "gar"
-  post_held_text: "You have held "
-  post_held_view: "view"
-  post_help: "Help"
-  post_hidden_posts: "Hidden Posts"
-  post_history: "History"
-  post_history: "History"
-  post_history_notes: "Notes"
-  post_history_tags: "Tags"
-  post_hover_by: " by "
-  post_hover_child: "Child"
-  post_hover_flagged: "Flagged"
-  post_hover_hidden: "Hidden"
-  post_hover_parent: "Parent"
-  post_hover_pending: "Pending"
-  post_hover_post: "Post #"
-  post_hover_rating: "Rating: "
-  post_hover_score: "Score: "
-  post_image: "Image Search"
-  post_image_edit: "Edit"
-  post_image_respond: "Respond"
-  post_image_text: "You need a privileged account to see this image"
-  post_list: "List"
-  post_meant: "Maybe you meant: "
-  post_mod: "Moderate"
-  post_mod_ago: " ago "
-  post_mod_ago2: ""
-  post_mod_approve: "Approve"
-  post_mod_delete: "Delete"
-  post_mod_down: "down"
-  post_mod_enter_reason: "Enter a reason"
-  post_mod_flagged: "Flagged"
-  post_mod_invert: "Invert Selection"
-  post_mod_mod: "mod"
-  post_mod_parent: "Parent: "
-  post_mod_pending: "Pending"
-  post_mod_rating: "Rating: "
-  post_mod_reason: "Reason: "
-  post_mod_score: "Score: "
-  post_mod_search: "Search"
-  post_mod_select: "Select All"
-  post_mod_size: "Size: "
-  post_mod_tags: "Tags: "
-  post_mod_uploaded: "Uploaded by"
-  post_mode: "Mode"
-  post_next: "Next"
-  post_options: "Options"
-  post_options_add_fav: "Add to favorites"
-  post_options_add_pool: "Add to pool"
-  post_options_approve: "Approve"
-  post_options_approve_confirm: "Do you really want to approve this post?"
-  post_options_avatar: "Set avatar"
-  post_options_del_fav: "Remove from favorites"
-  post_options_delete: "Delete"
-  post_options_download: "Download"
-  post_options_download_larger: "Download larger version"
-  post_options_edit: "Edit"
-  post_options_flag: "Flag for deletion"
-  post_options_history: "Post history"
-  post_options_image: "Image"
-  post_options_resize: "Resize image"
-  post_options_tl: "Add translation"
-  post_options_undelete: "Undelete"
-  post_options_view_larger: "View larger version"
-  post_pool_change: "change page"
-  post_pool_next: "Next »"
-  post_pool_previous: "« Previous"
-  post_pool_remove: "Remove from pool"
-  post_pool_remove: "remove"
-  post_pool_remove_confirm: "Are you sure you want to remove this post from "
-  post_pool_text: "This post is "
-  post_pool_text2: "in the "
-  post_pool_text3: " pool"
-  post_pool_xfer: "transfer to parent"
-  post_pool_xfer_confirm: " and add the parent post instead?"
-  post_popular: "Popular"
-  post_previous: "Previous"
-  post_random: "Random"
-  post_random: "Random"
-  post_related: "Related Posts"
-  post_related_dupe: "Find dupes"
-  post_related_next: "Next"
-  post_related_parent: "Parent"
-  post_related_posts: "Related Posts"
-  post_related_previous: "Previous"
-  post_related_random: "Random"
-  post_related_sim: "Find similar"
-  post_reparent: "Reparent posts"
-  post_script: "Apply tag script"
-  post_search: "Search"
-  post_sim_cancel: "Cancel"
-  post_sim_color: "Don't ignore colors"
-  post_sim_down: "(down)"
-  post_sim_dupe: "Flag as duplicate"
-  post_sim_dupe_period: "."
-  post_sim_dupe_text: "Your post may be a duplicate."
-  post_sim_dupe_text10: "Hidden Posts"
-  post_sim_dupe_text11: " in the sidebar to view hidden posts."
-  post_sim_dupe_text2: "Please read the "
-  post_sim_dupe_text3: "If your post is a better version of an existing one, but the old post should remain,"
-  post_sim_dupe_text4: "the old post."
-  post_sim_dupe_text5: "If your post is a better version of an existing one, and the old post should be deleted, "
-  post_sim_dupe_text6: "mark the old post as a duplicate"
-  post_sim_dupe_text7: "Otherwise, please "
-  post_sim_dupe_text8: "delete your post"
-  post_sim_dupe_text9: "Your tag blacklist has hidden some potential duplicates.  Use "
-  post_sim_edit: "Edit Posts"
-  post_sim_edit_tags: "Edit Tags"
-  post_sim_flag: "Flag Post"
-  post_sim_gray: "Ignore colors"
-  post_sim_mode: "Mode"
-  post_sim_more: "Show More"
-  post_sim_options: "Options"
-  post_sim_reparent: "Reparent"
-  post_sim_script: "Apply Tag Script"
-  post_sim_services: "Services"
-  post_sim_services_text: "Use all services "
-  post_sim_update: "Update"
-  post_sim_upload: "Upload this image"
-  post_sim_view: "View Posts"
-  post_source: "Source"
-  post_stats: "Statistics"
-  post_stats_ago: " ago"
-  post_stats_ago2: ""
-  post_stats_approver: "Approver: "
-  post_stats_fav: "Favorited by: "
-  # views/post/show_partials/_status_notices
-  post_stats_id: "Id: "
-  post_stats_posted: "Posted: "
-  post_stats_rating: "Rating: "
-  post_stats_score: "Score: "
-  post_stats_size: "Size: "
-  post_stats_source: "Source: "
-  post_subs: "Subscriptions"
-  post_tag_script: "Tag Script"
-  post_tag_script_text: "Apply tag script to all of these posts?"
-  post_tags: "Tags"
-  post_update: "Update"
-  post_upload: "Upload"
-  post_upload_artist: "Find artist"
-  post_upload_e: "Explicit"
-  post_upload_file: "File"
-  post_upload_parent: "Parent"
-  post_upload_q: "Questionable"
-  post_upload_rating: "Rating"
-  post_upload_rating_text: "Explicit tags include sex, pussy, penis, masturbation, blowjob, etc. "
-  post_upload_related: "None"
-  post_upload_related_circles: "Related circles"
-  post_upload_s: "Safe"
-  post_upload_source: "Source"
-  post_upload_source_text: "You can enter a URL here to download from a website."
-  post_upload_tags: "Tags"
-  post_upload_tags_help: "help"
-  post_upload_tags_text: "Separate tags with spaces. "
-  post_upload_text: "One"
-  post_upload_text10: "Do not upload "
-  post_upload_text11: " or "
-  post_upload_text12: " art"
-  post_upload_text13: "Do not upload things with "
-  post_upload_text14: "Group doujinshi, manga pages, and similar game CGs together"
-  post_upload_text15: "Read the "
-  post_upload_text16: "You can only upload "
-  post_upload_text17: " today."
-  post_upload_text18: "This post already exists: "
-  post_upload_text2: "Some"
-  post_upload_text3: " of your posts "
-  post_upload_text4: "was"
-  post_upload_text5: "were"
-  post_upload_text6: "recently deleted"
-  post_upload_text7: "dismiss this message"
-  post_upload_text8: "Upload Guidelines"
-  post_upload_text9: "Please keep the following guidelines in mind when uploading something. Consistently violating these rules will result in a ban."
-  post_view: "View posts"
-  post_viewing: "Viewing pool "
   ratings:
     _: Rating
     e: Explicit
@@ -997,7 +1023,7 @@ en:
   report_level: "Level"
   report_limit: "Limit"
   report_notes: "Notes"
-  report_percet: "Percentage"
+  report_percent: "Percentage"
   report_search: "Search"
   report_start: "Start Date"
   report_tags: "Tags"
@@ -1010,6 +1036,12 @@ en:
   # static
   report_votes_text: "The following report shows user votes over the past three days."
   report_wiki: "Wiki"
+  settings:
+    api:
+      show:
+        info: Your API Key
+        reset: Reset
+        title: API Key
   static:
     index:
       search: Search
@@ -1192,13 +1224,16 @@ en:
   time:
     # t: "16 days", "1 hour", etc (localized)
     x_ago: '%{t} ago'
+    x_ago_html: '%{t} ago'
   user:
     change_email:
       current_email: Current Email
       current_password: Current password
       new_email: New Email
+      title: Change Email Address
     change_password:
       new_password: New password
+      title: Change Password
     edit:
       email: Email
       no_email: none
@@ -1356,6 +1391,7 @@ en:
   user_signup: "Signup"
   user_signup_email: "Email"
   user_signup_email_text: "Optional, for email notifications and password resets."
+  user_signup_email_text_wa: "Required for account activation, email notifications and password resets."
   user_signup_name: "Name"
   user_signup_name_text: "Please remember your name will be easy to Google on this site."
   user_signup_text: "Signup"
@@ -1404,3 +1440,30 @@ en:
       title: Wiki
     recent_changes:
       title: Recent Changes
+  # Client side (javascript) specific translations
+  js:
+    comment:
+      flag_ask: Flag this comment?
+      flag_process: Flagging comment for deletion...
+      flag_notice: Comment flagged for deletion
+      quote_error: Error quoting comment
+      delete_ask: Are you sure you want to delete this comment?
+      delete_error: 'Error deleting comment: '
+    denied: Access Denied
+    dmail:
+      fetch_prev_msg: Fetching previous messages...
+      prev_msg_loaded: Previous messages loaded
+    error: 'Error: '
+    forum:
+      mark_as_read: Marked all topics as read
+      quote_error: Error quoting forum post
+    no_translation: 'No translation: '
+    noone: no one
+    said: 'said:'
+    vote:
+      remove: Remove vote
+      good: Good
+      great: Great
+      fav: Favorite
+      saved: Vote saved
+      voting: Voting...

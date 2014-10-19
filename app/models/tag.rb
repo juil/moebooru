@@ -9,6 +9,11 @@ class Tag < ActiveRecord::Base
   has_and_belongs_to_many :_posts, :class_name => 'Post'
   has_many :tag_aliases, :foreign_key => 'alias_id'
 
+  TYPE_ORDER = {}
+  CONFIG['tag_order'].each_with_index do |type, index|
+    TYPE_ORDER[type] = index
+  end
+
   def self.count_by_period(start, stop, options = {})
     options[:limit] ||= 50
     options[:exclude_types] ||= []
@@ -109,6 +114,6 @@ class Tag < ActiveRecord::Base
       search_for = "%" + query.to_escaped_for_sql_like + "%"
     end
 
-    Tag.find(:all, :conditions => ["name LIKE ? ESCAPE E'\\\\' AND name <> ?", search_for, query], :order => "post_count DESC", :limit => 6, :select => "name").map(&:name).sort
+    Tag.where("name LIKE ? AND name <> ?", search_for, query).order("post_count DESC").limit(6).pluck(:name).sort
   end
 end

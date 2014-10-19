@@ -16,7 +16,7 @@
       <tr>
         <th><label for="dmail_to_name"><%= t('.form.to') %></label></th>
         <td>
-          <%= text_field "dmail", "to_name", :class => 'ac-user-name' %>
+          <%= text_field "dmail", "to_name", :value => params[:to], :class => 'ac-user-name' %>
         </td>
       </tr>
       <tr>
@@ -33,7 +33,7 @@
 <script type="text/javascript">
   $('dmail-preview').observe('click', function(event) {
     $('dmail-preview-area').innerHTML = '<em><%= t('.preview_loading') %></em>';
-    new Ajax.Updater('dmail-preview-area', '<%= escape_javascript url_for(:controller => :dmail, :action => :preview) %>', { parameters: { body: $F('dmail_body') } });
+    new Ajax.Updater('dmail-preview-area', '<%= escape_javascript url_for(:controller => :dmail, :action => :preview) %>', { method: "get", parameters: { body: $F('dmail_body') } });
     event.stop(); //Stop the browser from actually going to href.
   });
 </script>

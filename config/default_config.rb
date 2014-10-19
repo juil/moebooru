@@ -9,4 +9,10 @@ CONFIG['default_locale'] ||= 'en'
 CONFIG['url_base'] ||= 'http://' + CONFIG['server_host']
 
 # Set secure to false by default due to ssl requirement
-CONFIG['secure'] ||= false
+CONFIG['secure'] = false if CONFIG['secure'].nil?
+
+CONFIG['standalone'] = true if CONFIG['standalone'].nil?
+CONFIG['bundler_groups'] ||= [:default, Rails.env]
+CONFIG['bundler_groups'] << 'standalone' if CONFIG['standalone']
+
+CONFIG['bgcolor'] ||= 'gray'

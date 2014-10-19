@@ -5,7 +5,7 @@ class Post < ActiveRecord::Base
 
   define_callbacks :delete
   define_callbacks :undelete
-  has_many :notes, :order => "id desc"
+  has_many :notes, lambda { order "id DESC" }
   has_one :flag_detail, :class_name => "FlaggedPostDetail"
   belongs_to :user
   before_validation :set_random!, :on => :create
@@ -18,9 +18,10 @@ class Post < ActiveRecord::Base
   set_callback :delete, :before, :clear_avatars
   after_save :commit_flag
   has_and_belongs_to_many :_tags, :class_name => 'Tag'
-  scope :available, where('posts.status <> ?', 'deleted')
+  scope :available, lambda { where "posts.status <> ?", "deleted" }
   scope :has_any_tags, lambda { |tags| where('posts.tags_index @@ ?', Array(tags).map { |t| t.to_escaped_for_tsquery }.join(' | ')) }
   scope :has_all_tags, lambda { |tags| where('posts.tags_index @@ ?', Array(tags).map { |t| t.to_escaped_for_tsquery }.join(' & ')) }
+  scope :flagged, lambda { where "status = ?", "flagged" }
 
   def self.slow_has_all_tags(tags)
     p = Post.scoped
@@ -148,17 +149,18 @@ class Post < ActiveRecord::Base
     # Don't bump posts if the status wasn't "pending"; it might be "flagged".
     if old_status == "pending" and CONFIG["hide_pending_posts"] then
       touch_index_timestamp
-      self.save!
     end
+    # Always try to save to trigger history logging.
+    self.save!
   end
 
   def voted_by
     # Cache results
     if @voted_by.nil?
       @voted_by = {}
-      (1..3).each { |v|
-        @voted_by[v] = User.find(:all, :joins => "JOIN post_votes v ON v.user_id = users.id", :select => "users.name, users.id", :conditions => ["v.post_id = ? and v.score = ?", self.id, v], :order => "v.updated_at DESC") || []
-      }
+      (1..3).each do |v|
+        @voted_by[v] = User.select("users.name, users.id").joins(:post_votes).where(:post_votes => { :post_id => self.id, :score => v }).order("post_votes.updated_at DESC")
+      end
     end
 
     return @voted_by

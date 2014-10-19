@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'cgi'
 require 'nokogiri'
 
@@ -7,11 +8,13 @@ module DText
     result = ""
 
     # Normalize newlines.
-    str.strip
-    str.gsub!(/(\r?\n)/, "\n")
+    str.strip!
+    str.gsub!(/(\r\n?)/, "\n")
     str.gsub!(/\n{3,}/, "\n\n")
     str = CGI.escapeHTML str
 
+    # Nuke spaces between newlines.
+    str.gsub!(/ *\n */, "\n")
     # Keep newline, use carriage return for split.
     str.gsub!("\n", "\n\r")
     data = str.split("\r")
@@ -89,7 +92,7 @@ module DText
       state.push "1"
       html << "<ul>"
     else
-      n = (str.split()[0] || "").count("*")
+      n = ((str =~ /^\*+\s+/ && str.split()[0]) || "").count("*")
       if n < state.last.to_i
         html << '</ul>' * (state.last.to_i - n)
         state[-1] = n.to_s
@@ -97,25 +100,29 @@ module DText
         html << '<ul>'
         state[-1] = (state.last.to_i + 1).to_s
       end
+      if not str =~ /^\*+\s+/
+        state.pop
+        return html + parseline(str, state)
+      end
     end
-    if not str =~ /^\*+\s+/
-      state.pop
-      html << "</ul>"
-      return html + parseline(str, state)
-    end
-    html << str.gsub(/\*+\s+(.+)\n*/, '<li>\1</li>')
+    html << str.gsub(/\*+\s+(.+)\n*/, '<li>\1')
   end
 
   def parseurl(str)
-    # Basic URL pattern
-    url = /(h?ttps?:\/\/\[?(:{0,2}[\w\-]+)((:{1,2}|\.)[\w\-]+)*\]?(:\d+)*(\/[^\s\n<]*)*)/
+    # url
+    str.gsub! %r{(^|[\s\(>])(h?ttps?://(?:(?!&gt;&gt;)[^\s<"])+[^\s<".])}, '\1<a href="\2">\2</a>'
 
-    # Substitute url tag in this form:
-    str.gsub!(/(^|[\s\(>])#{url}/, '\1<a href="\2">\2</a>')                       # url
-    str.gsub!(/&lt;&lt;\s*#{url}\s*\|\s*(.+?)\s*&gt;&gt;/, '<a href="\1">\7</a>') # <<url|label>>
-    str.gsub!(/(^|[\s>])&quot;(.+?)&quot;:#{url}/, '\1<a href="\3">\2</a>')       # "label":url
-    str.gsub!(/&lt;&lt;\s*#{url}\s*&gt;&gt;/, '<a href="\1">\1</a>')              # <<url>>
-    str.gsub!(/<a href="ttp/, '<a href="http')                                    # Fix ttp(s) scheme
+    # <<url|label>>
+    str.gsub! %r{&lt;&lt;(h?ttps?://(?:(?!&gt;&gt;).)+)\|((?:(?!&gt;&gt;).)+)&gt;&gt;}, '<a href="\1">\2</a>'
+
+    # <<url>>
+    str.gsub! %r{&lt;&lt;(h?ttps?:\/\/(?:(?!&gt;&gt;).)+)&gt;&gt;}, '<a href="\1">\1</a>'
+
+    # "label":url
+    str.gsub! %r{(^|[\s>])&quot;((?:(?!&quot;).)+)&quot;:(h?ttps?://[^\s<"]+[^\s<".])}, '\1<a href="\3">\2</a>'
+
+    # Fix ttp(s) scheme
+    str.gsub! /<a href="ttp/, '<a href="http'
     return str
   end
 

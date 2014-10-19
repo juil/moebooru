@@ -2,6 +2,7 @@ class ForumPost < ActiveRecord::Base
   belongs_to :creator, :class_name => 'User', :foreign_key => :creator_id
   belongs_to :updater, :class_name => 'User', :foreign_key => :last_updated_by
   after_create :initialize_last_updated_by
+  after_create :clear_cache
   before_validation :validate_title
   validates_length_of :body, :minimum => 1, :message => "You need to enter a body"
 
@@ -55,7 +56,7 @@ class ForumPost < ActiveRecord::Base
     def self.included(m)
       m.after_create :update_parent_on_create
       m.before_destroy :update_parent_on_destroy
-      m.has_many :children, :class_name => "ForumPost", :foreign_key => :parent_id, :order => "id"
+      m.has_many :children, lambda { order "id" }, :class_name => "ForumPost", :foreign_key => :parent_id
       m.belongs_to :parent, :class_name => "ForumPost", :foreign_key => :parent_id
     end
 
@@ -102,7 +103,9 @@ class ForumPost < ActiveRecord::Base
         :creator_id => creator_id,
         :id => id,
         :parent_id => parent_id,
-        :title => title
+        :title => title,
+        :updated_at => updated_at,
+        :pages => ((response_count == 0 ? 1 : response_count) / 30.0).ceil
       }
     end
 
@@ -149,6 +152,10 @@ class ForumPost < ActiveRecord::Base
     if is_parent?
       update_attribute(:last_updated_by, creator_id)
     end
+  end
+
+  def clear_cache
+    Rails.cache.delete "forum_posts"
   end
 
   def last_updater

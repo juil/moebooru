@@ -90,6 +90,12 @@ class ApplicationController < ActionController::Base
         @current_user = User.find(session[:user_id])
       end
 
+      if !@current_user and params[:api_key] and params[:username]
+        @from_api = true
+        @current_user = User.authenticate_with_api_key(params[:username], params[:api_key])
+        head :forbidden and return unless @current_user
+      end
+
       if @current_user == nil && session[:user_id]
         @current_user = User.find_by_id(session[:user_id])
       end
@@ -224,7 +230,7 @@ class ApplicationController < ActionController::Base
 
     def render_error(record)
       @record = record
-      render :status => 500, :layout => "bare", :inline => "<%= error_messages_for('record') %>"
+      render :status => 500, :layout => "bare", :inline => "<%= render 'shared/error_messages', :object => @record %>"
     end
 
   end
@@ -236,6 +242,8 @@ class ApplicationController < ActionController::Base
   #local_addresses.clear
 
   before_filter :set_current_user
+  before_filter :mini_profiler_check if Rails.env.development?
+  before_filter :limit_api
   before_filter :set_country
   before_filter :check_ip_ban
   after_filter :init_cookies
@@ -245,7 +253,7 @@ class ApplicationController < ActionController::Base
   protected :get_cache_key
 
   def get_ip_ban()
-    ban = IpBans.find(:first, :conditions => ["? <<= ip_addr", request.remote_ip])
+    ban = IpBans.where("? <<= ip_addr", request.remote_ip).first
     if not ban then return nil end
     return ban
   end
@@ -271,9 +279,9 @@ class ApplicationController < ActionController::Base
 
   def save_tags_to_cookie
     if params[:tags] || (params[:post] && params[:post][:tags])
-      tags = TagAlias.to_aliased((params[:tags] || params[:post][:tags]).downcase.scan(/\S+/))
-      tags += cookies["recent_tags"].to_s.to_valid_utf8.scan(/\S+/)
-      cookies["recent_tags"] = tags.slice(0, 20).join(" ")
+      tags = TagAlias.to_aliased((params[:tags] || params[:post][:tags]).to_s.to_valid_utf8.downcase.split)
+      tags += cookies["recent_tags"].to_s.to_valid_utf8.downcase.split
+      cookies["recent_tags"] = tags.uniq.slice(0, 20).join(" ")
     end
   end
 
@@ -307,15 +315,13 @@ class ApplicationController < ActionController::Base
   def init_cookies
     return if params[:format] == "xml" || params[:format] == "json"
 
-    forum_posts = ForumPost.find(:all, :order => "updated_at DESC", :limit => 10, :conditions => "parent_id IS NULL")
-    cookies["current_forum_posts"] = forum_posts.map { |fp|
-      if @current_user.is_anonymous?
-        updated = false
-      else
-        updated = fp.updated_at > @current_user.last_forum_topic_read_at
-      end
-      [fp.title, fp.id, updated, (fp.response_count / 30.0).ceil]
-    }.to_json
+    jsdata = {}
+    jsdata[:forum_post_last_read_at] = if @current_user.is_anonymous?
+      Time.now
+    else
+      @current_user.last_forum_topic_read_at || Time.at(0)
+    end
+    jsdata.each { |name, data| cookies[name] = data.to_json }
 
     cookies["country"] = @current_user_country
 
@@ -330,12 +336,6 @@ class ApplicationController < ActionController::Base
         cookies["has_mail"] = "0"
       end
 
-      if @current_user.is_privileged_or_higher? && ForumPost.updated?(@current_user)
-        cookies["forum_updated"] = "1"
-      else
-        cookies["forum_updated"] = "0"
-      end
-
       if @current_user.is_privileged_or_higher? && Comment.updated?(@current_user)
         cookies["comments_updated"] = "1"
       else
@@ -343,7 +343,7 @@ class ApplicationController < ActionController::Base
       end
 
       if @current_user.is_janitor_or_higher? then
-        mod_pending = Post.count(:conditions => "status = 'flagged' or status = 'pending'")
+        mod_pending = Post.where("status IN (?)", %w(flagged pending)).count
         cookies["mod_pending"] = mod_pending.to_s
       end
 
@@ -382,6 +382,13 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  def limit_api
+    if @from_api && !(request.format.xml? || request.format.json? || request.format.zip?)
+      request.session_options[:skip] = true
+      render nothing: true, status: 404
+    end
+  end
+
     def set_locale
       if params[:locale] and CONFIG['available_locales'].include?(params[:locale])
         cookies['locale'] = { :value => params[:locale], :expires => 1.year.from_now }
@@ -418,5 +425,10 @@ class ApplicationController < ActionController::Base
 
     def sanitize_id
       params[:id] = params[:id].to_i
+    end
+    def mini_profiler_check
+      if @current_user.is_admin_or_higher?
+        Rack::MiniProfiler.authorize_request
+      end
     end
 end

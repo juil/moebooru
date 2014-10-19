@@ -1,7 +1,7 @@
 CONFIG = {}
 require File.expand_path '../../lib/languages', __FILE__
 # The version of this Moebooru.
-CONFIG["version"] = '3.2.1-alpha'
+CONFIG["version"] = "4.0.0-a.1"
 
 # The default name to use for anyone who isn't logged in.
 CONFIG["default_guest_name"] = "Anonymous"
@@ -123,7 +123,7 @@ CONFIG["enable_caching"] = false
 CONFIG["enable_aggressive_caching"] = false
 
 # The server and port where the memcache client can be accessed. Only relevant if you enable caching.
-CONFIG["memcache_servers"] = ["localhost:4000"]
+CONFIG["memcache_servers"] = ["localhost:11211"]
 
 # Any post rated safe or questionable that has one of the following tags will automatically be rated explicit.
 CONFIG["explicit_tags"] = %w(pussy penis cum anal vibrator dildo masturbation oral_sex sex paizuri penetration guro rape asshole footjob handjob blowjob cunnilingus anal_sex)
@@ -213,6 +213,7 @@ CONFIG["tag_types"] = {
   "copy" => 3,
   "char" => 4
 }
+CONFIG['tag_order'] = %w(artist copyright character general)
 
 # Tag type IDs to not list in recent tag summaries, such as on the side of post/index:
 CONFIG["exclude_from_tag_sidebar"] = [0]

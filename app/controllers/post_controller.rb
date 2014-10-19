@@ -1,6 +1,9 @@
 require "download"
 
 class PostController < ApplicationController
+  #ignore upload/similar/create since they're user controlled and not worth measuring in newrelic
+  newrelic_ignore :only => [:upload, :similar, :create]
+
   layout 'default'
   helper :avatar
 
@@ -8,8 +11,6 @@ class PostController < ApplicationController
   before_filter :post_member_only, :only => [:update, :upload, :flag]
   before_filter :janitor_only, :only => [:moderate, :undelete]
   after_filter :save_tags_to_cookie, :only => [:update, :create]
-
-  around_filter :cache_action, :only => [:index, :atom, :piclens]
 
   helper :wiki, :tag, :comment, :pool, :favorite, :advertisements
 
@@ -405,32 +406,30 @@ class PostController < ApplicationController
   end
 
   def show
+    @post = Post.includes(:comments => [:user])
     begin
-      response.headers["Cache-Control"] = "max-age=300" if params[:cache]
-      @cache = params[:cache] # temporary
-      @body_only = params[:body].to_i == 1
-      @post = Post.includes(:comments => [:user])
       if params[:md5]
-        @post = @post.find_by_md5(params[:md5].downcase) || raise(ActiveRecord::RecordNotFound)
+        @post = @post.find_by! :md5 => params[:md5].downcase
       else
         @post = @post.find(params[:id])
       end
-
-      @pools = Pool.find(:all, :joins => "JOIN pools_posts ON pools_posts.pool_id = pools.id", :conditions => "pools_posts.post_id = #{@post.id} AND active", :order => "pools.name", :select => "pools.name, pools.id")
-      if params.has_key?(:pool_id) then
-        @following_pool_post = PoolPost.find(:first, :conditions => ["active AND pool_id = ? AND post_id = ?", params[:pool_id], @post.id]) rescue nil
-      else
-        @following_pool_post = PoolPost.find(:first, :conditions => ["active AND post_id = ?", @post.id]) rescue nil
-      end
-      @tags = {:include => @post.cached_tags.split(/ /)}
-      @include_tag_reverse_aliases = true
-      respond_to do |format|
-        format.html
-      end
-    rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound, ActiveRecord::StatementInvalid
       respond_to do |format|
         format.html { render :action => "show_empty", :status => 404 }
       end
+      return
+    end
+
+    @pools = Pool.select(%w(pools.name pools.id)).joins(:pool_posts).where(:pools_posts => { :post_id => @post.id, :active => true }).order(:name)
+    if params.has_key?(:pool_id) then
+      @following_pool_post = PoolPost.where(:active => true, :pool_id => params[:pool_id], :post_id => @post.id).first
+    else
+      @following_pool_post = PoolPost.where(:active => true, :post_id => @post.id).first
+    end
+    @tags = {:include => @post.cached_tags.split(/ /)}
+    @include_tag_reverse_aliases = true
+    respond_to do |format|
+      format.html
     end
   end
 

@@ -107,7 +107,7 @@ class ForumController < ApplicationController
     @forum_post = ForumPost.find(params[:id])
     @children = ForumPost.paginate :order => "id", :per_page => 30, :conditions => ["parent_id = ?", params[:id]], :page => page_number
 
-    if !@current_user.is_anonymous? && @current_user.last_forum_topic_read_at < @forum_post.updated_at && @forum_post.updated_at < 3.seconds.ago
+    if !@current_user.is_anonymous? && @current_user.last_forum_topic_read_at < @forum_post.updated_at
       @current_user.update_attribute(:last_forum_topic_read_at, @forum_post.updated_at)
     end
 
@@ -117,6 +117,8 @@ class ForumController < ApplicationController
   def index
     if params[:parent_id]
       @forum_posts = ForumPost.includes(:updater, :creator).paginate :order => "is_sticky desc, updated_at DESC", :per_page => 100, :conditions => ["parent_id = ?", params[:parent_id]], :page => page_number
+    elsif params[:latest]
+      @forum_posts = ForumPost.includes(:updater, :creator).where(:parent_id => nil).order("updated_at DESC").paginate(:page => 1, :per_page => 10)
     else
       @forum_posts = ForumPost.includes(:updater, :creator).paginate :order => "is_sticky desc, updated_at DESC", :per_page => 30, :conditions => "parent_id IS NULL", :page => page_number
     end

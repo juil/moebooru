@@ -2,7 +2,7 @@ module PostParentMethods
   module ClassMethods
     def update_has_children(post_id)
       has_children = Post.exists?(["parent_id = ? AND status <> 'deleted'", post_id])
-      execute_sql("UPDATE posts SET has_children = ? WHERE id = ?", has_children, post_id)
+      execute_sql("UPDATE posts SET has_children = ? WHERE id = ?", !!has_children, post_id)
     end
 
     def recalculate_has_children
@@ -34,8 +34,8 @@ module PostParentMethods
     m.validate :validate_parent
     m.set_callback :delete, :after, :give_favorites_to_parent
     m.versioned :parent_id, :default => nil
-    m.has_many :children, :class_name => "Post", :order => "id",
-      :foreign_key => :parent_id, :conditions => "status <> 'deleted'"
+    m.has_many :children, lambda { where("status <> ?", "deleted").order("id") },
+      :class_name => "Post", :foreign_key => :parent_id
   end
 
   def validate_parent
